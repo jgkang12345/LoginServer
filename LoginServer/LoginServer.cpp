@@ -69,7 +69,8 @@ void LoginProc()
 			int32 userIdSize = wcslen(userInfoObject.userId);
 			int32 compare = wcscmp(loginJobObject.userPw, userInfoObject.userPw);
 
-			BYTE sendBuffer[1000];
+			// BYTE sendBuffer[1000];
+			byte* sendBuffer = new byte[1000];
 			BinaryWriter bw(sendBuffer);
 			PacketHeader* pktHeader = bw.WriteReserve<PacketHeader>();
 			int32 canLogin = 9999;
@@ -88,8 +89,8 @@ void LoginProc()
 
 			pktHeader->_type = PacketProtocol::S2C_LOGIN;
 			pktHeader->_pktSize = bw.GetWriterSize();
-
-			connection->Send(sendBuffer, bw.GetWriterSize());
+			ThreadSafeSharedPtr safeSendBuffer = ThreadSafeSharedPtr(reinterpret_cast<PACKET_HEADER*>(sendBuffer), true);
+			connection->Send(safeSendBuffer);
 			connection->SetConnectionId(SQ);
 			ConnectionContext::GetInstance()->AddConnetion(connection->GetConnectionId(), connection);
 			/*

@@ -108,7 +108,7 @@ void PacketHandler::HandlePacket_C2S_CREATECHARACTER(LoginConnection* connection
 	int32 code = 0; // 0 정상처리, 1 이미 중복된 닉네임
 	if (cnt != 0)
 	{
-		BYTE sendBuffer[1000] = {};
+		byte* sendBuffer = new byte(1000);
 		BinaryWriter bw(sendBuffer);
 		PacketHeader* pktHeader = bw.WriteReserve<PacketHeader>();
 		pktHeader->_type = PacketProtocol::S2C_CREATECHARACTER;
@@ -116,21 +116,23 @@ void PacketHandler::HandlePacket_C2S_CREATECHARACTER(LoginConnection* connection
 		bw.Write(code);
 		pktHeader->_pktSize = bw.GetWriterSize();
 		// overlapped;
-		connection->Send(sendBuffer, bw.GetWriterSize());
+		ThreadSafeSharedPtr safeSendBuffer = ThreadSafeSharedPtr(reinterpret_cast<PACKET_HEADER*>(sendBuffer), true);
+		connection->Send(safeSendBuffer);
 		PlayerDBConnectionPool::GetInstance()->Push(con);
 		return;
 	}
 
 	if (playerTotalCnt >= 3)
 	{
-		BYTE sendBuffer[1000] = {};
+		byte* sendBuffer = new byte(1000);
 		BinaryWriter bw(sendBuffer);
 		PacketHeader* pktHeader = bw.WriteReserve<PacketHeader>();
 		pktHeader->_type = PacketProtocol::S2C_CREATECHARACTER;
 		code = 4;
 		bw.Write(code);
 		pktHeader->_pktSize = bw.GetWriterSize();
-		connection->Send(sendBuffer, bw.GetWriterSize());
+		ThreadSafeSharedPtr safeSendBuffer = ThreadSafeSharedPtr(reinterpret_cast<PACKET_HEADER*>(sendBuffer), true);
+		connection->Send(safeSendBuffer);
 		PlayerDBConnectionPool::GetInstance()->Push(con);
 		return;
 	}
@@ -195,7 +197,8 @@ void PacketHandler::HandlePacket_C2S_CREATECHARACTER(LoginConnection* connection
 	SQLCloseCursor(con->GetHSTMT());
 
 	{
-		BYTE sendBuffer2[1000] = {};
+		// BYTE sendBuffer2[1000] = {};
+		byte* sendBuffer2 = new byte[1000];
 		BinaryWriter bw2(sendBuffer2);
 		PacketHeader* pktHeader = bw2.WriteReserve<PacketHeader>();
 		int32 playerCnt = v.size();
@@ -211,18 +214,21 @@ void PacketHandler::HandlePacket_C2S_CREATECHARACTER(LoginConnection* connection
 		pktHeader->_type = PacketProtocol::S2C_CHARACTERLIST;
 		pktHeader->_pktSize = bw2.GetWriterSize();
 
+		ThreadSafeSharedPtr safeSendBuffer2 = ThreadSafeSharedPtr(reinterpret_cast<PACKET_HEADER*>(sendBuffer2), true);
+
 		if (playerCnt > 0)
-			connection->Send(sendBuffer2, bw2.GetWriterSize());
+			connection->Send(safeSendBuffer2);
 	}
 
 	{
-		BYTE sendBuffer[1000] = {};
+		byte* sendBuffer = new byte[1000];
 		BinaryWriter bw(sendBuffer);
 		PacketHeader* pktHeader = bw.WriteReserve<PacketHeader>();
 		pktHeader->_type = PacketProtocol::S2C_CREATECHARACTER;
 		bw.Write(code);
 		pktHeader->_pktSize = bw.GetWriterSize();
-		connection->Send(sendBuffer, bw.GetWriterSize());
+		ThreadSafeSharedPtr safeSendBuffer = ThreadSafeSharedPtr(reinterpret_cast<PACKET_HEADER*>(sendBuffer), true);
+		connection->Send(safeSendBuffer);
 	}
 	PlayerDBConnectionPool::GetInstance()->Push(con);
 }
@@ -268,7 +274,7 @@ void PacketHandler::HandlePacket_C2S_CHARACTERLIST(LoginConnection* connection, 
 	SQLCloseCursor(con->GetHSTMT());
 
 	{
-		BYTE sendBuffer2[1000] = {};
+		byte* sendBuffer2 = new byte[1000];
 		BinaryWriter bw2(sendBuffer2);
 		PacketHeader* pktHeader = bw2.WriteReserve<PacketHeader>();
 		int32 playerCnt = v.size();
@@ -283,9 +289,9 @@ void PacketHandler::HandlePacket_C2S_CHARACTERLIST(LoginConnection* connection, 
 
 		pktHeader->_type = PacketProtocol::S2C_CHARACTERLIST;
 		pktHeader->_pktSize = bw2.GetWriterSize();
-
+		ThreadSafeSharedPtr safeSendBuffer2 = ThreadSafeSharedPtr(reinterpret_cast<PACKET_HEADER*>(sendBuffer2),true);
 		if (playerCnt > 0)
-			connection->Send(sendBuffer2, bw2.GetWriterSize());
+			connection->Send(safeSendBuffer2);
 	}
 
 	PlayerDBConnectionPool::GetInstance()->Push(con);
@@ -349,7 +355,7 @@ void PacketHandler::HandlePacket_C2S_DELETECHARACTER(LoginConnection* connection
 		}
 		SQLCloseCursor(con->GetHSTMT());
 
-		BYTE sendBuffer2[1000] = {};
+		byte* sendBuffer2 = new byte[1000];
 		BinaryWriter bw2(sendBuffer2);
 		PacketHeader* pktHeader = bw2.WriteReserve<PacketHeader>();
 		int32 playerCnt = v.size();
@@ -364,7 +370,8 @@ void PacketHandler::HandlePacket_C2S_DELETECHARACTER(LoginConnection* connection
 
 		pktHeader->_type = PacketProtocol::S2C_CHARACTERLIST;
 		pktHeader->_pktSize = bw2.GetWriterSize();
-		connection->Send(sendBuffer2, bw2.GetWriterSize());
+		ThreadSafeSharedPtr safeSendBuffer2 = ThreadSafeSharedPtr(reinterpret_cast<PACKET_HEADER*>(sendBuffer2),true);
+		connection->Send(safeSendBuffer2);
 	}
 	PlayerDBConnectionPool::GetInstance()->Push(con);
 }
@@ -407,14 +414,15 @@ void PacketHandler::HandlePacket_C2S_GAMEPLAY(LoginConnection* connection, BYTE*
 		// TODO 캐릭터 초기 접속
 		port = 30004;
 	}
-	BYTE sendBuffer[1000] = {};
+	byte* sendBuffer = new byte[1000];
 	BinaryWriter bw(sendBuffer);
 	PacketHeader* pktHeader = bw.WriteReserve<PacketHeader>();
 	bw.Write((int16)port);
 	bw.Write(playerSQ);
 	pktHeader->_type = PacketProtocol::S2C_SERVERMOVE;
 	pktHeader->_pktSize = bw.GetWriterSize();
-	connection->Send(sendBuffer, bw.GetWriterSize());
+	ThreadSafeSharedPtr safeSendBuffer = ThreadSafeSharedPtr(reinterpret_cast<PACKET_HEADER*>(sendBuffer),true);
+	connection->Send(safeSendBuffer);
 	PlayerDBConnectionPool::GetInstance()->Push(con);
 }
 
@@ -445,13 +453,14 @@ void PacketHandler::HandlePacket_C2S_SERVER_MOVE(LoginConnection* connection, BY
 	br.Read(playerSQ);
 	br.Read(serverPort);
 
-	BYTE sendBuffer[1000] = {};
+	byte* sendBuffer = new byte(1000);
 	BinaryWriter bw(sendBuffer);
 	PacketHeader* pktHeader = bw.WriteReserve<PacketHeader>();
 	bw.Write(serverPort);
 	bw.Write(playerSQ);
 	pktHeader->_type = PacketProtocol::S2C_SERVERMOVE;
 	pktHeader->_pktSize = bw.GetWriterSize();
-	connection->Send(sendBuffer, bw.GetWriterSize());
+	ThreadSafeSharedPtr safeSendBuffer = ThreadSafeSharedPtr(reinterpret_cast<PACKET_HEADER*>(sendBuffer),true);
+	connection->Send(safeSendBuffer);
 	PlayerDBConnectionPool::GetInstance()->Push(playerCon);
 }
