@@ -119,7 +119,7 @@ int main()
 	PlayerDBConnectionPool::GetInstance()->Init(L"PLAYER", L"sa", L"root", 5);
 	AccountDBConnectionPool::GetInstance()->Init(L"MSSQL", L"sa", L"root", 5);
 
-	const char* ip = "127.0.0.1";
+	const char* ip = "58.236.130.58";
 	uint16 port = 30003;
 	JGNet98App loginServerApp(ip,port, LoginConnection::MakeGameSession);
 
