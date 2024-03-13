@@ -453,7 +453,7 @@ void PacketHandler::HandlePacket_C2S_SERVER_MOVE(LoginConnection* connection, BY
 	br.Read(playerSQ);
 	br.Read(serverPort);
 
-	byte* sendBuffer = new byte(1000);
+	byte* sendBuffer = new byte[1000];
 	BinaryWriter bw(sendBuffer);
 	PacketHeader* pktHeader = bw.WriteReserve<PacketHeader>();
 	bw.Write(serverPort);
