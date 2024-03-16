@@ -136,7 +136,7 @@ int main()
 	while (true) 
 	{
 		LoginProc();
-		Sleep(0);
+		Sleep(1);
 	}
 
 	ThreadManager::GetInstacne()->AllJoin();
