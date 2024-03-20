@@ -85,7 +85,7 @@ void LoginProc()
 			bw.Write(canLogin);
 			// À¯Àú SQ
 			bw.Write((int32)SQ);
-			bw.Write(ServerPort::VILLAGE_SERVER);
+			bw.Write(ServerPort::WORLD_SERVER);
 
 			pktHeader->_type = PacketProtocol::S2C_LOGIN;
 			pktHeader->_pktSize = bw.GetWriterSize();
