@@ -9,9 +9,11 @@ private:
 
 public:
 	static Connection* MakeGameSession(const SOCKET& socket, const SOCKADDR_IN& sockAddr) { return new LoginConnection(socket, sockAddr); }
+	static Connection* MakeGameSession2() { return new LoginConnection(); }
 
 public:
 	LoginConnection(const SOCKET& socket, const SOCKADDR_IN& sockAddrIn);
+	LoginConnection();
 	virtual ~LoginConnection();
 
 public:

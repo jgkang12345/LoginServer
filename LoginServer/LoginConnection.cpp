@@ -9,6 +9,10 @@ LoginConnection::LoginConnection(const SOCKET& socket, const SOCKADDR_IN& sockAd
 
 }
 
+LoginConnection::LoginConnection() : Connection()
+{
+}
+
 LoginConnection::~LoginConnection()
 {
 }

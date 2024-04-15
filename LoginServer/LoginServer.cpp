@@ -121,7 +121,7 @@ int main()
 
 	const char* ip = "58.236.130.58";
 	uint16 port = 30003;
-	JGNet98App loginServerApp(ip,port, LoginConnection::MakeGameSession);
+	JGNet98App loginServerApp(ip,port, LoginConnection::MakeGameSession2);
 
 	SYSTEM_INFO sysInfo;
 	GetSystemInfo(&sysInfo);
