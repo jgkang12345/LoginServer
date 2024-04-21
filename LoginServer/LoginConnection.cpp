@@ -24,7 +24,7 @@ void LoginConnection::OnRecv(Connection* connection, byte* dataPtr, int32 dataLe
 
 void LoginConnection::OnDisconnect()
 {
-	ConnectionContext::GetInstance()->RemoveConnection(_connectionId);
+	Connection::OnDisconnect();
 }
 
 void LoginConnection::OnConnect()
